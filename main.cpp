@@ -16,7 +16,7 @@ Vector2Int pos = Vector2Int(200, 50);
 
 int main()
 {
-    openGL_init(canvas.width, canvas.height, canvas.pixels, PIXEL_SCALE);
+    openGL_init(canvas.width, canvas.height, canvas.pixels, PIXEL_SCALE, NULL, true);
 
     while (!openGL_shouldClose())
     {

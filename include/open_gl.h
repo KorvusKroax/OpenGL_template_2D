@@ -5,24 +5,29 @@
 #include <shader.h>
 #include <canvas.h>
 
-unsigned int canvasWidth;
-unsigned int canvasHeight;
-int* canvasPixels;
-float pixelScale;
+GLFWmonitor* primaryMonitor;
+const GLFWvidmode* videoMode;
+unsigned int screenWidth;
+unsigned int screenHeight;
 
 unsigned int windowWidth;
 unsigned int windowHeight;
 GLFWwindow* window;
 
+unsigned int canvasWidth;
+unsigned int canvasHeight;
+int* canvasPixels;
+float pixelScale;
+
 float quadVertices[] = {
     // positions    // texCoords
-    -1.0f,  1.0f,   0.0f, 1.0f,
-    -1.0f, -1.0f,   0.0f, 0.0f,
-     1.0f, -1.0f,   1.0f, 0.0f,
+    -1.0f,  1.0f,   0.0f, 1.0f,     // left top
+    -1.0f, -1.0f,   0.0f, 0.0f,     // left bottom
+     1.0f, -1.0f,   1.0f, 0.0f,     // right bottom
 
-    -1.0f,  1.0f,   0.0f, 1.0f,
-     1.0f, -1.0f,   1.0f, 0.0f,
-     1.0f,  1.0f,   1.0f, 1.0f
+    -1.0f,  1.0f,   0.0f, 1.0f,     // left top
+     1.0f, -1.0f,   1.0f, 0.0f,     // right bottom
+     1.0f,  1.0f,   1.0f, 1.0f      // right top
 };
 
 unsigned int quadVAO;
@@ -33,23 +38,32 @@ unsigned int renderbuffer;
 
 Shader* quadShader;
 
-void openGL_init(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _canvasPixels, float _pixelScale)
+void openGL_init(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _canvasPixels, float _pixelScale, bool borderlessWindow = false, bool fullscreen = false)
 {
-    canvasWidth = _canvasWidth;
-    canvasHeight = _canvasHeight;
-    canvasPixels = _canvasPixels;
-    pixelScale = _pixelScale;
-
-    windowWidth = _canvasWidth * pixelScale;
-    windowHeight =  _canvasHeight * pixelScale;
-
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_DECORATED, borderlessWindow ? GLFW_FALSE : GLFW_TRUE);
+    // glfwWindowHint(GLFW_SAMPLES, 32); // Uhuh?
 
-    window = glfwCreateWindow(windowWidth, windowHeight, "title", NULL, NULL);
+    primaryMonitor =  glfwGetPrimaryMonitor();
+    videoMode = glfwGetVideoMode(primaryMonitor);
+    screenWidth = videoMode->width;
+    screenHeight = videoMode->height;
+
+    canvasWidth = _canvasWidth;
+    canvasHeight = _canvasHeight;
+    canvasPixels = _canvasPixels;
+    pixelScale = _pixelScale;
+
+    windowWidth = canvasWidth * pixelScale;
+    windowHeight =  canvasHeight * pixelScale;
+    window = fullscreen ?
+        glfwCreateWindow(screenWidth, screenHeight, "title", primaryMonitor, NULL) :
+        glfwCreateWindow(windowWidth, windowHeight, "title", NULL, NULL);
+
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -60,6 +74,16 @@ void openGL_init(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _ca
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return;
+    }
+
+    float w =  (float)windowWidth / screenWidth;
+    float h =  (float)windowHeight / screenHeight;
+
+    std::cout << "w: " << std::to_string(w) << ", h: " << std::to_string(h) << std::endl;
+
+    for (int i = 0; i < sizeof(quadVertices) / sizeof(quadVertices[0]); i += 4) {
+        quadVertices[i + 0] *= w;
+        quadVertices[i + 1] *= h;
     }
 
     glGenVertexArrays(1, &quadVAO);
@@ -100,6 +124,9 @@ void openGL_update()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);
+
+    glClearColor(.1f, .2f, .2f, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     quadShader->use();
     glBindVertexArray(quadVAO);

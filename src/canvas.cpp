@@ -27,6 +27,18 @@ void Canvas::setPixel(int x, int y, ColorRGBA color)
     }
 }
 
+void Canvas::drawRectangle(int x, int y, int w, int h, ColorRGBA color)
+{
+    for (int i = x; i <= x + w; i++) {
+        setPixel(x + i, y    , color);
+        setPixel(x + i, y + h, color);
+    }
+    for (int i = y; i <= y + h; i++) {
+        setPixel(x    , y + i, color);
+        setPixel(x + w, y + i, color);
+    }
+}
+
 void Canvas::drawLine(Vector2Int p1, Vector2Int p2, ColorRGBA color) { drawLine(p1.x, p1.y, p2.x, p2.y, color); }
 
 void Canvas::drawLine(int x1, int y1, int x2, int y2, ColorRGBA color)
