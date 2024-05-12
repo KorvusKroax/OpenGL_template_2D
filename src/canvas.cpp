@@ -1,10 +1,12 @@
 #include <canvas.h>
 
-Canvas::Canvas(unsigned int _width, unsigned int _height)
+Canvas::Canvas() { }
+
+Canvas::Canvas(unsigned int width, unsigned int height)
 {
-    width = _width;
-    height = _height;
-    pixels = new int[width * height];
+    this->width = width;
+    this->height = height;
+    this->pixels = new int[this->width * this->height];
 }
 
 Canvas::~Canvas() { delete []pixels; }
@@ -111,16 +113,16 @@ void Canvas::drawCircle(Vector2Int p, int r, ColorRGBA color) { drawCircle(p.x, 
 
 void Canvas::drawCircle(int x, int y, int r, ColorRGBA color)
 {
-    int xx = -r;
-    int yy = 0;
-    int rr = 2 - 2 * r;
+    int _x = -r;
+    int _y = 0;
+    int _r = 2 - 2 * r;
     do {
-        setPixel(x - xx, y + yy, color);
-        setPixel(x - yy, y - xx, color);
-        setPixel(x + xx, y - yy, color);
-        setPixel(x + yy, y + xx, color);
-        r = rr;
-        if (r <= yy) rr += ++yy * 2 + 1;
-        if (r > xx || rr > yy) rr += ++xx * 2 + 1;
-    } while (xx < 0);
+        setPixel(x - _x, y + _y, color);
+        setPixel(x - _y, y - _x, color);
+        setPixel(x + _x, y - _y, color);
+        setPixel(x + _y, y + _x, color);
+        r = _r;
+        if (r <= _y) _r += ++_y * 2 + 1;
+        if (r > _x || _r > _y) _r += ++_x * 2 + 1;
+    } while (_x < 0);
 }

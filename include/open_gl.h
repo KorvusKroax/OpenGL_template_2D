@@ -5,8 +5,6 @@
 #include <shader.h>
 #include <canvas.h>
 
-GLFWmonitor* primaryMonitor;
-const GLFWvidmode* videoMode;
 unsigned int screenWidth;
 unsigned int screenHeight;
 
@@ -38,31 +36,34 @@ unsigned int renderbuffer;
 
 Shader* quadShader;
 
-void openGL_init(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _canvasPixels, float _pixelScale, bool borderlessWindow = false, bool fullscreen = false)
+float currentTime;
+float lastTime;
+float deltaTime;
+
+void openGL_setQuad();
+void updateDeltaTime();
+
+void openGL_initFullscreen(Canvas* canvas[])
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    glfwWindowHint(GLFW_DECORATED, borderlessWindow ? GLFW_FALSE : GLFW_TRUE);
-    // glfwWindowHint(GLFW_SAMPLES, 32); // Uhuh?
 
-    primaryMonitor =  glfwGetPrimaryMonitor();
-    videoMode = glfwGetVideoMode(primaryMonitor);
+    GLFWmonitor* primaryMonitor =  glfwGetPrimaryMonitor();
+    const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
     screenWidth = videoMode->width;
     screenHeight = videoMode->height;
 
-    canvasWidth = _canvasWidth;
-    canvasHeight = _canvasHeight;
-    canvasPixels = _canvasPixels;
-    pixelScale = _pixelScale;
+    *canvas = new Canvas(screenWidth, screenHeight);
+    canvasWidth = (*canvas)->width;
+    canvasHeight = (*canvas)->height;
+    canvasPixels = (*canvas)->pixels;
+    pixelScale = 1;
 
-    windowWidth = canvasWidth * pixelScale;
-    windowHeight =  canvasHeight * pixelScale;
-    window = fullscreen ?
-        glfwCreateWindow(screenWidth, screenHeight, "title", primaryMonitor, NULL) :
-        glfwCreateWindow(windowWidth, windowHeight, "title", NULL, NULL);
+    windowWidth = screenWidth;
+    windowHeight =  screenHeight;
+    window = glfwCreateWindow(screenWidth, screenHeight, "title", primaryMonitor, NULL);
 
     if (window == NULL) {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -76,16 +77,85 @@ void openGL_init(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _ca
         return;
     }
 
-    float w =  (float)windowWidth / screenWidth;
-    float h =  (float)windowHeight / screenHeight;
+    openGL_setQuad();
+}
 
-    std::cout << "w: " << std::to_string(w) << ", h: " << std::to_string(h) << std::endl;
+void openGL_initFullscreen(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _canvasPixels, float _pixelScale)
+{
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    for (int i = 0; i < sizeof(quadVertices) / sizeof(quadVertices[0]); i += 4) {
-        quadVertices[i + 0] *= w;
-        quadVertices[i + 1] *= h;
+    GLFWmonitor* primaryMonitor =  glfwGetPrimaryMonitor();
+    const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+    screenWidth = videoMode->width;
+    screenHeight = videoMode->height;
+
+    canvasWidth = _canvasWidth;
+    canvasHeight = _canvasHeight;
+    canvasPixels = _canvasPixels;
+    pixelScale = _pixelScale;
+
+    windowWidth = canvasWidth * pixelScale;
+    windowHeight =  canvasHeight * pixelScale;
+    window = glfwCreateWindow(screenWidth, screenHeight, "fullscreen_window_title", primaryMonitor, NULL);
+
+    if (window == NULL) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return;
+    }
+    glfwMakeContextCurrent(window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return;
     }
 
+    for (int i = 0; i < sizeof(quadVertices) / sizeof(quadVertices[0]); i += 4) {
+        quadVertices[i + 0] *= (float)windowWidth / screenWidth;
+        quadVertices[i + 1] *= (float)windowHeight / screenHeight;
+    }
+
+    openGL_setQuad();
+}
+
+void openGL_initWindowed(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _canvasPixels, float _pixelScale, const char* title = "windowed_window_title", bool borderless = false, bool resizable = false)
+{
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_DECORATED, borderless ? GLFW_FALSE : GLFW_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
+
+    canvasWidth = _canvasWidth;
+    canvasHeight = _canvasHeight;
+    canvasPixels = _canvasPixels;
+    pixelScale = _pixelScale;
+
+    windowWidth = canvasWidth * pixelScale;
+    windowHeight =  canvasHeight * pixelScale;
+    window = glfwCreateWindow(windowWidth, windowHeight, title, NULL, NULL);
+
+    if (window == NULL) {
+        std::cout << "Failed to create GLFW window" << std::endl;
+        glfwTerminate();
+        return;
+    }
+    glfwMakeContextCurrent(window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return;
+    }
+
+    openGL_setQuad();
+}
+
+void openGL_setQuad()
+{
     glGenVertexArrays(1, &quadVAO);
     glBindVertexArray(quadVAO);
 
@@ -136,6 +206,15 @@ void openGL_update()
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+    updateDeltaTime();
+}
+
+void updateDeltaTime()
+{
+    currentTime = static_cast<float>(glfwGetTime());
+    deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
 }
 
 bool openGL_shouldClose()

@@ -7,16 +7,21 @@ const unsigned int CANVAS_WIDTH = 320;
 const unsigned int CANVAS_HEIGHT = 200;
 const float PIXEL_SCALE = 3;
 
-Canvas canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+Canvas* canvas;
+Vector2Int pos;
 
 void processInput();
 void processDisplay();
 
-Vector2Int pos = Vector2Int(200, 50);
-
 int main()
 {
-    openGL_init(canvas.width, canvas.height, canvas.pixels, PIXEL_SCALE, NULL, true);
+    canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+    openGL_initWindowed(canvas->width, canvas->height, canvas->pixels, PIXEL_SCALE);
+    // openGL_initFullscreen(canvas->width, canvas->height, canvas->pixels, PIXEL_SCALE);
+
+    // openGL_initFullscreen(&canvas);
+
+    pos = Vector2Int(200, 50);
 
     while (!openGL_shouldClose())
     {
@@ -24,6 +29,8 @@ int main()
         processDisplay();
 
         openGL_update();
+
+        std::cout << deltaTime << std::endl;
     }
 
     openGL_terminate();
@@ -37,10 +44,10 @@ void processInput()
     }
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        if (pos.y < CANVAS_HEIGHT - 1) pos.y++;
+        if (pos.y < canvas->height - 1) pos.y++;
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        if (pos.x < CANVAS_WIDTH - 1) pos.x++;
+        if (pos.x < canvas->width - 1) pos.x++;
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         if (pos.y > 0) pos.y--;
@@ -52,8 +59,8 @@ void processInput()
 
 void processDisplay()
 {
-    canvas.fillCanvas();
-    canvas.setPixel(pos, ColorRGBA(255, 255, 255, 255));
-    canvas.drawCircle(pos, 20, ColorRGBA(0, 255, 255, 255));
-    canvas.drawLine_unsafe(pos.x, pos.y, canvas.width * .5f, canvas.height * .5f, ColorRGBA(255, 255, 0, 255));
+    canvas->fillCanvas();
+    canvas->setPixel(pos, ColorRGBA(255, 255, 255, 255));
+    canvas->drawCircle(pos, 20, ColorRGBA(0, 255, 255, 255));
+    canvas->drawLine(pos.x, pos.y, canvas->width * .5f, canvas->height * .5f, ColorRGBA(255, 255, 0, 255));
 }

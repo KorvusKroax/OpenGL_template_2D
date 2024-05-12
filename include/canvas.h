@@ -7,11 +7,12 @@
 class Canvas
 {
     public:
-        unsigned int width;
-        unsigned int height;
+        unsigned int width = 0;
+        unsigned int height = 0;
         int* pixels = nullptr;
 
-        Canvas(unsigned int _width, unsigned int _height);
+        Canvas();
+        Canvas(unsigned int width, unsigned int height);
         ~Canvas();
         void fillCanvas();
         void fillCanvas(ColorRGBA color);
