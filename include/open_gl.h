@@ -10,11 +10,11 @@ unsigned int screenHeight;
 
 unsigned int windowWidth;
 unsigned int windowHeight;
-GLFWwindow* window;
+GLFWwindow *window;
 
 unsigned int canvasWidth;
 unsigned int canvasHeight;
-int* canvasPixels;
+int *canvasPixels;
 float pixelScale;
 
 float quadVertices[] = {
@@ -34,7 +34,7 @@ unsigned int framebuffer;
 unsigned int textureColorbuffer;
 unsigned int renderbuffer;
 
-Shader* quadShader;
+Shader *quadShader;
 
 float currentTime;
 float lastTime;
@@ -43,15 +43,15 @@ float deltaTime;
 void openGL_setQuad();
 void updateDeltaTime();
 
-void openGL_initFullscreen(Canvas* canvas[])
+void openGL_initFullscreen(Canvas *canvas[])
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWmonitor* primaryMonitor =  glfwGetPrimaryMonitor();
-    const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+    GLFWmonitor *primaryMonitor =  glfwGetPrimaryMonitor();
+    const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);
     screenWidth = videoMode->width;
     screenHeight = videoMode->height;
 
@@ -80,15 +80,15 @@ void openGL_initFullscreen(Canvas* canvas[])
     openGL_setQuad();
 }
 
-void openGL_initFullscreen(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _canvasPixels, float _pixelScale)
+void openGL_initFullscreen(unsigned int _canvasWidth, unsigned int _canvasHeight, int *_canvasPixels, float _pixelScale)
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWmonitor* primaryMonitor =  glfwGetPrimaryMonitor();
-    const GLFWvidmode* videoMode = glfwGetVideoMode(primaryMonitor);
+    GLFWmonitor *primaryMonitor =  glfwGetPrimaryMonitor();
+    const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);
     screenWidth = videoMode->width;
     screenHeight = videoMode->height;
 
@@ -121,7 +121,7 @@ void openGL_initFullscreen(unsigned int _canvasWidth, unsigned int _canvasHeight
     openGL_setQuad();
 }
 
-void openGL_initWindowed(unsigned int _canvasWidth, unsigned int _canvasHeight, int* _canvasPixels, float _pixelScale, const char* title = "windowed_window_title", bool borderless = false, bool resizable = false)
+void openGL_initWindowed(unsigned int _canvasWidth, unsigned int _canvasHeight, int *_canvasPixels, float _pixelScale, const char *title = "windowed_window_title", bool borderless = false, bool resizable = false)
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

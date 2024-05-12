@@ -7,7 +7,7 @@ const unsigned int CANVAS_WIDTH = 320;
 const unsigned int CANVAS_HEIGHT = 200;
 const float PIXEL_SCALE = 3;
 
-Canvas* canvas;
+Canvas *canvas;
 Vector2Int pos;
 
 void processInput();
@@ -18,7 +18,6 @@ int main()
     canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     openGL_initWindowed(canvas->width, canvas->height, canvas->pixels, PIXEL_SCALE);
     // openGL_initFullscreen(canvas->width, canvas->height, canvas->pixels, PIXEL_SCALE);
-
     // openGL_initFullscreen(&canvas);
 
     pos = Vector2Int(200, 50);
@@ -30,7 +29,7 @@ int main()
 
         openGL_update();
 
-        std::cout << deltaTime << std::endl;
+        // std::cout << "deltaTime: " << deltaTime << std::endl;
     }
 
     openGL_terminate();
@@ -55,6 +54,15 @@ void processInput()
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
         if (pos.x > 0) pos.x--;
     }
+
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+    mouseX = mouseX / pixelScale;
+    mouseY = canvas->height - mouseY / pixelScale;
+
+    pos = Vector2Int((int)mouseX, (int)mouseY);
+
+    std::cout << "x" << mouseX << ", y" << mouseY << std::endl;
 }
 
 void processDisplay()

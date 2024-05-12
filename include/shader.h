@@ -12,7 +12,7 @@ class Shader
     public:
         unsigned int ID;
 
-        Shader(const char* vertexPath, const char* fragmentPath)
+        Shader(const char *vertexPath, const char *fragmentPath)
         {
             std::string vertexCode;
             std::string fragmentCode;
@@ -35,11 +35,11 @@ class Shader
                 vertexCode   = vShaderStream.str();
                 fragmentCode = fShaderStream.str();
             }
-            catch (std::ifstream::failure& e) {
+            catch (std::ifstream::failure &e) {
                 std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
             }
-            const char* vShaderCode = vertexCode.c_str();
-            const char* fShaderCode = fragmentCode.c_str();
+            const char *vShaderCode = vertexCode.c_str();
+            const char *fShaderCode = fragmentCode.c_str();
 
             unsigned int vertex, fragment;
 

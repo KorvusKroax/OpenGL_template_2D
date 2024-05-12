@@ -9,7 +9,7 @@ class Canvas
     public:
         unsigned int width = 0;
         unsigned int height = 0;
-        int* pixels = nullptr;
+        int *pixels = nullptr;
 
         Canvas();
         Canvas(unsigned int width, unsigned int height);
