@@ -1,3 +1,5 @@
+#include <string.h>
+#include <algorithm>
 #include <canvas.h>
 
 Canvas::Canvas() { }
@@ -15,9 +17,14 @@ void Canvas::fillCanvas() { fillCanvas(ColorRGBA()); }
 
 void Canvas::fillCanvas(ColorRGBA color = ColorRGBA())
 {
+    // memset(pixels, 0xffffff00, width * height * sizeof(int));
+
     for (int i = 0; i < width * height; i++) {
         pixels[i] = color.value;
     }
+
+    // std::fill(pixels, pixels + width * height, color.value);
+    // std::fill_n(pixels, width * height, color.value);
 }
 
 void Canvas::setPixel(Vector2Int p, ColorRGBA color) { setPixel(p.x, p.y, color); }
@@ -113,16 +120,16 @@ void Canvas::drawCircle(Vector2Int p, int r, ColorRGBA color) { drawCircle(p.x, 
 
 void Canvas::drawCircle(int x, int y, int r, ColorRGBA color)
 {
-    int _x = -r;
-    int _y = 0;
-    int _r = 2 - 2 * r;
+    int xx = -r;
+    int yy = 0;
+    int rr = 2 - 2 * r;
     do {
-        setPixel(x - _x, y + _y, color);
-        setPixel(x - _y, y - _x, color);
-        setPixel(x + _x, y - _y, color);
-        setPixel(x + _y, y + _x, color);
-        r = _r;
-        if (r <= _y) _r += ++_y * 2 + 1;
-        if (r > _x || _r > _y) _r += ++_x * 2 + 1;
-    } while (_x < 0);
+        setPixel(x - xx, y + yy, color);
+        setPixel(x - yy, y - xx, color);
+        setPixel(x + xx, y - yy, color);
+        setPixel(x + yy, y + xx, color);
+        r = rr;
+        if (r <= yy) rr += ++yy * 2 + 1;
+        if (r > xx || rr > yy) rr += ++xx * 2 + 1;
+    } while (xx < 0);
 }

@@ -40,8 +40,13 @@ float currentTime;
 float lastTime;
 float deltaTime;
 
+double currentFPSTime;
+double lastFPSTime;
+int nbFrames = 0;
+
 void openGL_setQuad();
 void updateDeltaTime();
+void FPSCounter();
 
 void openGL_initFullscreen(Canvas *canvas[])
 {
@@ -200,6 +205,8 @@ void openGL_update()
 
     quadShader->use();
     glBindVertexArray(quadVAO);
+    glDisable(GL_DEPTH_TEST);
+
     glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, canvasWidth, canvasHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, canvasPixels);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -208,6 +215,7 @@ void openGL_update()
     glfwPollEvents();
 
     updateDeltaTime();
+    // FPSCounter();
 }
 
 void updateDeltaTime()
@@ -215,6 +223,17 @@ void updateDeltaTime()
     currentTime = static_cast<float>(glfwGetTime());
     deltaTime = currentTime - lastTime;
     lastTime = currentTime;
+}
+
+void FPSCounter()
+{
+    currentFPSTime = glfwGetTime();
+    nbFrames++;
+    if ( currentFPSTime - lastFPSTime >= 1.0f ) {
+        printf("%f ms/frame\n", 1000.0/(double)nbFrames);
+        nbFrames = 0;
+        lastFPSTime += 1.0;
+    }
 }
 
 bool openGL_shouldClose()

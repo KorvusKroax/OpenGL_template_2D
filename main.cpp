@@ -1,11 +1,8 @@
 #include <open_gl.h>
 #include <canvas.h>
 
+#include <chrono>
 #include <iostream>
-
-const unsigned int CANVAS_WIDTH = 320;
-const unsigned int CANVAS_HEIGHT = 200;
-const float PIXEL_SCALE = 3;
 
 Canvas *canvas;
 Vector2Int pos;
@@ -15,9 +12,9 @@ void processDisplay();
 
 int main()
 {
-    canvas = new Canvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-    openGL_initWindowed(canvas->width, canvas->height, canvas->pixels, PIXEL_SCALE);
-    // openGL_initFullscreen(canvas->width, canvas->height, canvas->pixels, PIXEL_SCALE);
+    canvas = new Canvas(320, 200);
+    openGL_initWindowed(canvas->width, canvas->height, canvas->pixels, 3);
+    // openGL_initFullscreen(canvas->width, canvas->height, canvas->pixels, 3);
     // openGL_initFullscreen(&canvas);
 
     pos = Vector2Int(200, 50);
@@ -62,13 +59,20 @@ void processInput()
 
     pos = Vector2Int((int)mouseX, (int)mouseY);
 
-    std::cout << "x" << mouseX << ", y" << mouseY << std::endl;
+    // std::cout << "x" << mouseX << ", y" << mouseY << std::endl;
 }
 
 void processDisplay()
 {
-    canvas->fillCanvas();
-    canvas->setPixel(pos, ColorRGBA(255, 255, 255, 255));
+    auto startTime = std::chrono::high_resolution_clock::now();
+
+    canvas->fillCanvas(ColorRGBA(0, 50, 50, 255));
+    // canvas->setPixel(pos, ColorRGBA(255, 255, 255, 255));
     canvas->drawCircle(pos, 20, ColorRGBA(0, 255, 255, 255));
-    canvas->drawLine(pos.x, pos.y, canvas->width * .5f, canvas->height * .5f, ColorRGBA(255, 255, 0, 255));
+    // canvas->drawLine(pos.x, pos.y, canvas->width * .5f, canvas->height * .5f, ColorRGBA(255, 255, 0, 255));
+
+    auto finishTime = std::chrono::high_resolution_clock::now();
+
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime);
+    std::cout << microseconds.count() << "µs (" << (float)microseconds.count() / 1000 << "ms)" << std::endl;
 }
