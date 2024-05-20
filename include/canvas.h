@@ -14,7 +14,7 @@ class Canvas
         Canvas();
         Canvas(unsigned int width, unsigned int height);
         ~Canvas();
-        void fillCanvas();
+        void clearCanvas();
         void fillCanvas(ColorRGBA color);
         void setPixel(Vector2Int p, ColorRGBA color);
         void setPixel(int x, int y, ColorRGBA color);

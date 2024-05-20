@@ -13,7 +13,10 @@ Canvas::Canvas(unsigned int width, unsigned int height)
 
 Canvas::~Canvas() { delete []pixels; }
 
-void Canvas::fillCanvas() { fillCanvas(ColorRGBA()); }
+void Canvas::clearCanvas()
+{
+    memset(pixels, 0xffffff00, width * height * sizeof(int));
+}
 
 void Canvas::fillCanvas(ColorRGBA color = ColorRGBA())
 {
