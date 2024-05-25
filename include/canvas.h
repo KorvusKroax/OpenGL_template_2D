@@ -30,4 +30,5 @@ class Canvas
         void drawCircle(Vector2Int p, int r, ColorRGBA color);
         void drawCircle(int x, int y, int r, ColorRGBA color);
         void floodFill(int x, int y, ColorRGBA color);
+        void spanFill(int x, int y, ColorRGBA color);
 };

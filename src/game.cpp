@@ -41,10 +41,12 @@ void Game::processDisplay(Canvas *canvas)
     // auto startTime = std::chrono::high_resolution_clock::now();
 
     canvas->clearCanvas();
-    canvas->drawCircle(x, y, 5, ColorRGBA(255, 0, 0, 255));
 
-    canvas->drawCircle(canvas->width >> 1, canvas->height >> 1, 10, ColorRGBA(0, 255, 255, 255));
-    canvas->floodFill(canvas->width >> 1, canvas->height >> 1, ColorRGBA(0, 100, 100, 255));
+    canvas->drawCircle(canvas->width >> 1, canvas->height >> 1, 20, ColorRGBA(0, 255, 255, 255));
+    // canvas->floodFill(canvas->width >> 1, canvas->height >> 1, ColorRGBA(0, 100, 100, 255));
+    canvas->spanFill(canvas->width >> 1, canvas->height >> 1, ColorRGBA(0, 100, 100, 255));
+
+    canvas->drawCircle(x, y, 5, ColorRGBA(255, 0, 0, 255));
 
     // auto finishTime = std::chrono::high_resolution_clock::now();
     // auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finishTime - startTime);

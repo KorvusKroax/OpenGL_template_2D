@@ -173,3 +173,70 @@ void Canvas::floodFill(int x, int y, ColorRGBA color)
     delete[] next;
     delete[] dir;
 }
+
+void Canvas::spanFill(int x, int y, ColorRGBA color)
+{
+    unsigned int targetColor = getPixel(x, y);
+    if (targetColor == color.value) return;
+
+    int *next = new int[width * height * 2];
+    int index = 0;
+
+    next[index] = x;
+    next[index + 1] = x;
+    next[index + 2] = y;
+    next[index + 3] = 1;
+    index += 4;
+
+    int x1 = x;
+    int x2 = x;
+        y  = y - 1;
+    int dy = -1;
+
+    while (true) {
+        x = x1;
+        if (getPixel(x, y) == targetColor) {
+            while (getPixel(x - 1, y) == targetColor) {
+                setPixel(x - 1, y, color);
+                x--;
+            }
+            if (x < x1) {
+                next[index] = x;
+                next[index + 1] = x1 - 1;
+                next[index + 2] = y - dy;
+                next[index + 3] = -dy;
+                index += 4;
+            }
+        }
+
+        while (x1 <= x2) {
+            while (getPixel(x1, y) == targetColor) {
+                setPixel(x1, y, color);
+                x1++;
+            }
+            if (x1 > x) {
+                next[index] = x;
+                next[index + 1] = x1 - 1;
+                next[index + 2] = y + dy;
+                next[index + 3] = dy;
+                index += 4;
+            }
+            if (x1 - 1 > x2) {
+                next[index] = x2 + 1;
+                next[index + 1] = x1 - 1;
+                next[index + 2] = y - dy;
+                next[index + 3] = -dy;
+                index += 4;
+            }
+            x1++;
+            while (x1 < x2 && getPixel(x1, y) != targetColor) x1++;
+            x = x1;
+        }
+        if (index == 0) break;
+        index -= 4;
+        x1 = next[index];
+        x2 = next[index + 1];
+        y  = next[index + 2];
+        dy = next[index + 3];
+    }
+}
