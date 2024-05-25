@@ -1,4 +1,3 @@
-// #include <open_gl.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <shader.h>
@@ -62,11 +61,11 @@ int main()
         // positions    // texCoords
         -1.0f,  1.0f,   0.0f, 1.0f,     // left top
         -1.0f, -1.0f,   0.0f, 0.0f,     // left bottom
-        1.0f, -1.0f,   1.0f, 0.0f,     // right bottom
+         1.0f, -1.0f,   1.0f, 0.0f,     // right bottom
 
         -1.0f,  1.0f,   0.0f, 1.0f,     // left top
-        1.0f, -1.0f,   1.0f, 0.0f,     // right bottom
-        1.0f,  1.0f,   1.0f, 1.0f      // right top
+         1.0f, -1.0f,   1.0f, 0.0f,     // right bottom
+         1.0f,  1.0f,   1.0f, 1.0f      // right top
     };
     glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);

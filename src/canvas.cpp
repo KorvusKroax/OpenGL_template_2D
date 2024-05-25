@@ -1,5 +1,3 @@
-#include <string.h>
-#include <algorithm>
 #include <canvas.h>
 
 Canvas::Canvas() { }
@@ -11,23 +9,21 @@ Canvas::Canvas(unsigned int width, unsigned int height)
     this->pixels = new int[this->width * this->height];
 }
 
-Canvas::~Canvas() { delete []pixels; }
+Canvas::~Canvas()
+{
+    delete[] pixels;
+}
 
 void Canvas::clearCanvas()
 {
-    memset(pixels, 0xffffff00, width * height * sizeof(int));
+    memset(pixels, 0, width * height * sizeof(int));
 }
 
 void Canvas::fillCanvas(ColorRGBA color = ColorRGBA())
 {
-    // memset(pixels, 0xffffff00, width * height * sizeof(int));
-
     for (int i = 0; i < width * height; i++) {
         pixels[i] = color.value;
     }
-
-    // std::fill(pixels, pixels + width * height, color.value);
-    // std::fill_n(pixels, width * height, color.value);
 }
 
 void Canvas::setPixel(Vector2Int p, ColorRGBA color) { setPixel(p.x, p.y, color); }
@@ -39,14 +35,25 @@ void Canvas::setPixel(int x, int y, ColorRGBA color)
     }
 }
 
+unsigned int Canvas::getPixel(Vector2Int p) { return getPixel(p.x, p.y); }
+
+unsigned int Canvas::getPixel(int x, int y)
+{
+    if (x >= 0 && x < width && y >= 0 && y < height) {
+        return pixels[x + y * width];
+    }
+
+    return -1;
+}
+
 void Canvas::drawRectangle(int x, int y, int w, int h, ColorRGBA color)
 {
     for (int i = x; i <= x + w; i++) {
-        setPixel(x + i, y    , color);
+        setPixel(x + i, y, color);
         setPixel(x + i, y + h, color);
     }
     for (int i = y; i <= y + h; i++) {
-        setPixel(x    , y + i, color);
+        setPixel(x, y + i, color);
         setPixel(x + w, y + i, color);
     }
 }
@@ -135,4 +142,34 @@ void Canvas::drawCircle(int x, int y, int r, ColorRGBA color)
         if (r <= yy) rr += ++yy * 2 + 1;
         if (r > xx || rr > yy) rr += ++xx * 2 + 1;
     } while (xx < 0);
+}
+
+void Canvas::floodFill(int x, int y, ColorRGBA color)
+{
+    unsigned int targetColor = getPixel(x, y);
+    if (targetColor == color.value) return;
+
+    Vector2Int *dir = new Vector2Int[4] { Vector2Int(0, 1), Vector2Int(1, -1), Vector2Int(-1, -1), Vector2Int(-1, 1) };
+    int *next = new int[width * height * 2];
+    int index = 0;
+
+    while (true) {
+        setPixel(x, y, color);
+        for (int i = 0; i < 4; i++) {
+            x += dir[i].x;
+            y += dir[i].y;
+            if (getPixel(x, y) == targetColor) {
+                next[index] = x;
+                next[index + 1] = y;
+                index += 2;
+            }
+        }
+        if (index == 0) break;
+        index -= 2;
+        x = next[index];
+        y = next[index + 1];
+    }
+
+    delete[] next;
+    delete[] dir;
 }
